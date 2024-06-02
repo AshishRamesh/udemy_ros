@@ -22,7 +22,7 @@ class CountUntilClientNode(Node): # MODIFY NAME
         goal.period = period
 
         self.get_logger().info("Sending goal!!!!!")
-        self.count_until_client_.send_goal_async(goal).add_done_callback(self.goal_response_callback)
+        self.count_until_client_.send_goal_async(goal, feedback_callback=self.goal_feedback_callback).add_done_callback(self.goal_response_callback)
 
     def goal_response_callback(self, future):
         self.goal_handle_: ClientGoalHandle = future.result()
@@ -40,6 +40,10 @@ class CountUntilClientNode(Node): # MODIFY NAME
         elif status == GoalStatus.STATUS_ABORTED:
             self.get_logger().error("Aborted")
         self.get_logger().info("Result : "+ str(result.reached_number))
+
+    def goal_feedback_callback(self, feedback_msg):
+        number = feedback_msg.feedback.current_number
+        self.get_logger().info("Got feedback: "+str(number))
 
 def main(args=None):
     rclpy.init(args=args)
