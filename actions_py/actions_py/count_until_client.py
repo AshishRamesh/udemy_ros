@@ -27,7 +27,10 @@ class CountUntilClientNode(Node): # MODIFY NAME
     def goal_response_callback(self, future):
         self.goal_handle_: ClientGoalHandle = future.result()
         if self.goal_handle_.accepted:
+            self.get_logger().info("Goal accepted !!!")
             self.goal_handle_.get_result_async().add_done_callback(self.goal_result_callback)
+        else:
+            self.get_logger().warning("Goal Rejected :(")
 
     def goal_result_callback(self, future):
         result = future.result().result
