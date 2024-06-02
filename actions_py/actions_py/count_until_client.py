@@ -39,6 +39,8 @@ class CountUntilClientNode(Node): # MODIFY NAME
             self.get_logger().info("Success")
         elif status == GoalStatus.STATUS_ABORTED:
             self.get_logger().error("Aborted")
+        elif status == GoalStatus.STATUS_CANCELED:
+            self.get_logger().warn("Cancelled")
         self.get_logger().info("Result : "+ str(result.reached_number))
 
     def goal_feedback_callback(self, feedback_msg):
@@ -49,7 +51,7 @@ def main(args=None):
     rclpy.init(args=args)
     node = CountUntilClientNode() 
     node.send_goal(6, 1.0)
-    rclpy.spin(node)
+    rclpy.spin(node,)
     rclpy.shutdown()
 
 
