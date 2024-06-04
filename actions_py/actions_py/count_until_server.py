@@ -25,13 +25,18 @@ class CountUntilServerNode(Node): # MODIFY NAME
     def goal_callback(self, goal_request: CountUntil.Goal) : 
         self.get_logger().info("Goal Received")
 
-        with self.goal_lock_:
-            if self.goal_handle_ is not None and self.goal_handle_.is_active:
-                self.get_logger().info("A goal is already active !!!")
-                return GoalResponse.REJECT
+        # with self.goal_lock_:
+        #     if self.goal_handle_ is not None and self.goal_handle_.is_active:
+        #         self.get_logger().info("A goal is already active !!!")
+        #         return GoalResponse.REJECT
         if goal_request.target_number < 0:
             self.get_logger().warning("GOAL REJECTED!!!")
-            return GoalResponse.REJECT
+
+        with self.goal_lock_:
+            if self.goal_handle_ is not None and self.goal_handle_.is_active:
+                self.get_logger().info("Aborting current goal and accepting new goal ")
+                self.goal_handle_.abort()
+                return GoalResponse.REJECT
         self.get_logger().info("GOAL ACCEPTED!!!")
         return GoalResponse.ACCEPT
     
@@ -52,6 +57,9 @@ class CountUntilServerNode(Node): # MODIFY NAME
         result = CountUntil.Result()
 
         for i in range(target_number):
+            if not goal_handle.is_active:
+                result.reached_number = counter 
+                return result
             if goal_handle.is_cancel_requested:
                 self.get_logger().info("Cancelling Goal....")
                 goal_handle.canceled()
