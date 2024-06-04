@@ -26,7 +26,7 @@ class CountUntilServerNode(Node): # MODIFY NAME
         self.get_logger().info("Goal Received")
 
         with self.goal_lock_:
-            if self.goal_handle_ is not None and self.goal_handle.is_active:
+            if self.goal_handle_ is not None and self.goal_handle_.is_active:
                 self.get_logger().info("A goal is already active !!!")
                 return GoalResponse.REJECT
         if goal_request.target_number < 0:
